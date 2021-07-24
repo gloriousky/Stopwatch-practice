@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    ul,
+    li {
+        list-style: none;
+    }
+    
+    .container {
+        width: 100%;
+        margin: 0 auto;
+        height: 960px;
+        background: #E0E0E0;
+    }
+    
+    .wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    #Stopwatch {
+        font-size: 1.6rem;
+        width: 9em;
+        border-width: 1px;
+        text-align: center;
+        border-style: double double double double;
+        border-radius: 16px;
+        border-color: #aaa;
+        height: 2.5rem
+    }
+    
+    .btn__item button {
+        margin-top: 1rem;
+        background: #2894FF;
+        padding: .5rem .8rem;
+        font-size: 24px;
+        border-radius: 8px;
+    }
+    
+    .lap {
+        font-size: 24px;
+        background: #ECFFFF;
+        margin-bottom: 1rem;
+        padding: 12px 24px;
+        display: flex;
+    }
+    
+    .lap span {
+        margin-right: .8rem;
+    }
+    
+    .record_item {
+        width: 76px;
+        margin-right: 12px;
+    }
+    
+    .recordList {
+        display: flex;
+    }
+    
+    .recordList__item1 {
+        margin-right: 1rem;
+        background: #FFD2D2;
+        padding: .6rem .4rem;
+        font-size: 1.2rem;
+    }
+    
+    .recordList__item2 {
+        margin-right: 1rem;
+        padding: .6rem .4rem;
+        background: #ACD6FF;
+        font-size: 1.2rem;
+    }
+    
+    .recordList__item3 {
+        padding: .6rem .4rem;
+        background: #80FFFF;
+        font-size: 1.2rem;
+    }
+    
+    .record__item1 {
+        text-align: center;
+        background: #FFD2D2;
+        padding: 4px;
+    }
+    
+    .record__item2 {
+        text-align: center;
+        background: #ACD6FF;
+        padding: 4px;
+    }
+    
+    .record__item3 {
+        text-align: center;
+        background: #80FFFF;
+        padding: 4px;
+    }
+</style>
+<div class="container">
+    <div class="wrapper">
+        <div>
+            <input type="text" id="Stopwatch" value="00:00:00:000" readonly><br>
+        </div>
+
+        <div class="btn__item">
+            <button class="btn__start" type="button" onclick="start()">開始</button>
+            <button class="btn__stop" type="button" onclick="stop()">暫停</button>
+            <button class="btn__reset" type="button" onclick="Reset()">重設</button>
+            <button class="btn__record" type="button" onclick="record()" style="visibility:hidden">分段計時</button>
+        </div>
+        <h2>計時時間</h2>
+        <ul class="recordList">
+            <li class="recordList__item1">計時時間 <strong>(時/分/秒/毫秒)</strong></li>
+            <li class="recordList__item2">與前項時間相差</li>
+            <li class="recordList__item3">當下時間 <strong>(時/分/秒)</strong></li>
+        </ul>
+        <ul id="recordInfo" class="record__info">
+
+        </ul>
+    </div>
+</div>
+
+
+<body>
+    <script>
+        let hour, minute, second;
+        hour = minute = second = 0; //初始化 
+        let millisecond = 0; //毫秒 var int;
+        let hour2, minute2, second2, millisecond2;
+        hour2 = minute2 = second2 = millisecond2 = 0;
+        let millisecondCurrent = 0;
+        let millisecondBefore = 0;
+        let str = 0
+
+
+        function Reset() {
+            millisecond = hour = minute = second = millisecondCurrent = millisecondBefore = 0;
+            millisecond2 = hour2 = minute2 = second2 = 0;
+            str = 0;
+            window.clearInterval(int);
+            document.getElementById('Stopwatch').value = '00:00:00:000';
+            document.querySelector('.btn__start').style.visibility = 'visible'
+            let ulValue = ''
+            document.querySelector('.record__info').innerHTML = ulValue
+        }
+
+        function start() {
+            int = setInterval(timer, 3)
+            document.querySelector('.btn__start').style.visibility = 'hidden'
+            document.querySelector('.btn__reset').style.visibility = 'hidden'
+            document.querySelector('.btn__record').style.visibility = 'visible'
+        };
+
+        //碼表
+        function timer() {
+            millisecond = millisecond + 3;
+            if (millisecond >= 1000) {
+                millisecond = 0;
+                second = second + 1;
+            }
+            if (second >= 60) {
+                second = 0;
+                minute = minute + 1;
+            }
+            if (minute >= 60) {
+                minute = 0;
+                hour = hour + 1;
+            }
+            document.getElementById('Stopwatch').value = `${hour}：${minute}：${second}：${millisecond}`;
+        }
+
+        function stop() {
+            window.clearInterval(int);
+            document.querySelector('.btn__start').style.visibility = 'visible'
+            document.querySelector('.btn__reset').style.visibility = 'visible'
+            document.querySelector('.btn__record').style.visibility = 'hidden'
+        }
+
+        //分段紀錄
+        function record() {
+            str++
+            let li = document.createElement('li')
+            let currentTime = new Date();
+
+            //計時時間轉換成毫秒代入
+            millisecondCurrent = millisecond + second * 1000 + minute * 60 * 1000 + hour * 60 * 60 * 1000
+            timeRecord(millisecondCurrent)
+
+
+            //計算兩者時間差
+            function timeRecord(value) {
+                millisecondCurrent = millisecondCurrent - millisecondBefore
+                millisecondBefore = value
+            }
+            console.log(millisecondCurrent)
+
+            millisecond2 = millisecondCurrent
+
+            if (millisecond2 < 1000) {
+                millisecond2 = millisecond2
+            } else if (millisecond2 < 60000) {
+                second2 = parseInt((millisecond2 / 1000))
+                millisecond2 = millisecond2 - (second2 * 1000)
+            } else if (millisecond2 < 3600000) {
+                second2 = parseInt((millisecond2 / 1000))
+                minute2 = parseInt((second2 / 60))
+                second2 = second2 - (minute2 * 60)
+                millisecond2 = millisecond2 - ((minute2 * 60 + second2) * 1000)
+            } else if (millisecond2 < 86400000) {
+                second2 = parseInt((millisecond2 / 1000))
+                minute2 = parseInt((second2 / 60))
+                hour2 = parseInt((minute2 / 60))
+                minute2 = minute2 - (hour2 * 60)
+                second2 = second2 - ((hour2 * 60) + minute2) * 60
+                millisecond2 = millisecond2 - ((((hour2 * 60) + minute2) * 60 + second2) * 1000)
+            }
+
+            li.setAttribute('class', 'lap')
+            li.innerHTML = `<span>${str}</span><input type="text" class="record_item" placeholder="輸入筆記"><span class="record__item1">${hour}：${minute}：${second}：${millisecond}</span> <span class="record__item2">${hour2}：${minute2}：${second2}：${millisecond2}</span><span class="record__item3">${currentTime.getHours()}:${currentTime.getMinutes()}:${currentTime.getSeconds()}</span>`
+            document.querySelector('.record__info').appendChild(li)
+        }
+    </script>
+</body>
+
+</html>
